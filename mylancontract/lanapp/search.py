@@ -1110,3 +1110,124 @@ def mylan_main():
     f.close()
     return res_list
 
+
+def mylan_main(keyword):
+    ########################################################################
+    STATIC_ROOT = os.path.join(os.path.dirname(__file__), 'static')
+    DIR = os.path.join(STATIC_ROOT, 'algorithm').replace('\\', '/')
+
+    # out_filepath = 'algorithm' + '/output/'
+    out_filename = 'Output_search.csv'
+    # out_path = out_filepath + out_filename
+    out_path = os.path.join(DIR, out_filename)
+    directory_path = DIR + '/input/'
+    stop_filename = os.path.join(DIR + '/res/', 'stop_words.txt')
+    header = ['File Name', 'Keywords', 'Content']  # Column names in output file
+    ########################################################################
+
+    res_list = []
+    # Write header
+    with open(out_path, 'wb') as f:
+        wr = csv.writer(f)
+        wr.writerow(header)
+
+    with open(out_path, 'ab') as f:
+        # Input folder path
+        # directory_path = 'algorithm/input'
+
+        # stop_set = read_stop_words('algorithm/res/stop_words.txt')
+        stop_set = read_stop_words(stop_filename)
+
+        # Parse through each file in the input folder path
+        # print 'Keyword: ' + 'Change of Control' + '\n'
+        for fileName in os.listdir(directory_path):
+            # Ignore other files
+            if fileName == '.DS_Store':
+                continue
+            if fileName.startswith('~$'):
+                continue
+            print '-------------------------------------------------------------------------'
+            print 'File name: ' + fileName + '\n'
+
+            # Create a Document object of each of the files
+            document = Document(directory_path + "/" + fileName)
+            if not len(document.tables) == 0:
+                print("Exception!! tables in the document")
+            # for table in document.tables:
+            #             for row in table.rows:
+            #                 for cell in row.cells:
+            #                     print(cell.text)
+            # document = Document('/upper_camel_case+underline+after_list_paragraph.docx')
+
+            if not len(document.inline_shapes) == 0:
+                print("Exception!! pictures in the document")
+
+            # A list to add all the paragraphs in the document
+            paras = []
+
+            '''
+            The following for loop is used to add all the paragraphs in the document to the paras list object
+            '''
+            for p in document.paragraphs:
+                # print(p.text)
+                paras.append(p)
+
+            paras_number = len(paras)  # Find the number of paragraphs in the document
+
+            paras_toPrint = []  # A list to add all the paragraphs relevant to 'Change of Control' language in this case
+
+            # keywordindex = search(paras, keyword)
+            keywordindex, idx_to_term = search_2(paras, keyword, stop_set)
+            print '\tkeywordIndex: ' + str(keywordindex)
+            print idx_to_term
+
+            results = []
+            keyword_lists = []
+            result = ""
+            endindex = -1  # The index of the end of the last matched content
+
+            for index in keywordindex:
+                keyword = idx_to_term[index]
+                # If the paragraph has been matched before, ignore it
+                if index <= endindex:
+                    continue
+
+                # If the keyword is not at the start of a paragraph, just extract this paragraph and don't match other paragraphs
+                if not keyword.lower() in paras[index].text[:60].lower():
+                    results.append(paras[index])
+                    endindex = index
+                    print '\tTarget Paragraph: [{0}]\n\t\t{1}\n'.format(index, paras[index].text.encode("utf-8"))
+                    continue
+
+                print '\tTarget Paragraph: [{0}]\n\t\t{1}\n'.format(index, paras[index].text.encode("utf-8"))
+                target = find_patterns(paras, index, keyword, stop_set)  # Find the target pattern
+
+                if index == paras_number - 1:  # The last paragraph
+                    result = paras[index]
+                else:
+                    result, endindex = match(paras, target, index, stop_set)
+
+                results.append(result)
+                keyword_lists.append(keyword)
+
+            # Output the result to a csv file
+            wr = csv.writer(f, escapechar='\\')
+            # Created a single list of all instances of 'Change of Control'
+            # Ignored unrecognized ascii characters that throw an encoding error. Need improvement
+            for result in results:
+                #         for i in range(len(results)):
+                #             result = results[i]
+                #             keyword = keyword_lists[i]
+                if hasattr(result, '__iter__'):
+                    text = [paras.text.encode('ascii', 'ignore') for paras in result]
+                    res = "\n".join(text)
+                else:
+                    res = result.text.encode('ascii', 'ignore')
+
+                wr.writerow([fileName, keyword, res])
+
+            print '\n'
+            res_list.append((fileName, keyword, results))
+    print "end"
+    f.close()
+    return res_list

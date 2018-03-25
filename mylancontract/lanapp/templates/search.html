@@ -7,21 +7,21 @@
     <link href="../static/css/bootstrap/bootstrap.min.css" rel="stylesheet">
 
 </head>
-<body>
 
+<body>
+<br/><br/><br/>
 <div class="row">
-    <div class="col-3">aaaa</div>
-    <div class="col-6">bbbb
-        <form method="post" action="{% url 'search' %}">
+    <div class="col-3"></div>
+    <div class="col-6">
+        <form method="post" action="{% url 'key_search' %}">
             <h2>Please Type in keywords:</h2>
 
-            <label for="inputKeyword">Keyword</label>
-            <input type="text" id="inputKeyword" placeholder="Keyword" required autofocus>
+            <input type="text" class="form-control" id="inputKeyword" placeholder="Keyword" name="keyword" required autofocus>
             <button class="btn btn-lg btn-primary btn-block" type="submit">Search</button>
             {% csrf_token %}
         </form>
     </div>
-    <div class="col-3">cccc</div>
+    <div class="col-3"></div>
 </div>
 
 </body>
