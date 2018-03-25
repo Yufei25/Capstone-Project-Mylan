@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'css/bootstrap/bootstrap.min.css'%}" rel="stylesheet">
+
+</head>
+
+<body>
+<br/><br/><br/>
+<div class="row" style="margin-left: 20px;">
+    <div class="col-1"><b>Filename</b></div>
+    <div class="col-1"><b>Keyword</b></div>
+    <div class="col-10"><b>Content</b></div>
+</div>
+{% for result in results %}
+    <div class="row" style="margin-left: 20px;">
+        <div class="col-1" style="word-wrap:break-word">{{ result.filename }}</div>
+        <div class="col-1" style="word-wrap:break-word">{{ result.keyword }}</div>
+        <div class="col-10" style="word-wrap:break-word">{{ result.content }}</div>
+    </div>
+    <hr style="margin-left: 20px;">
+{% endfor %}
+
+</body>
+</html>

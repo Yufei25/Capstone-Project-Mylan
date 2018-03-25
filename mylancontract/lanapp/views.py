@@ -36,12 +36,14 @@ def test(request):
 
 
 def key_search(request):
+    context = {}
     if 'keyword' not in request.POST or not request.POST['keyword']:
         raise Http404
     else:
+        SearchResult.objects.all().delete()
+
         keyword = request.POST['keyword']
         res_list = mylan_main(keyword)
-        str = '{0}&emsp;{1}&emsp;{2}<br/>'.format('File Name', 'Keywords', 'Content')
         for tuple in res_list:
             filename = tuple[0]
             keyword = tuple[1]
@@ -55,8 +57,9 @@ def key_search(request):
                     res = result.text.encode('ascii', 'ignore')
 
                 search_result = SearchResult.objects.create(filename=filename, keyword=keyword, content=res)
-                str += '<br/>{0}&emsp;{1}&emsp;{2}<br/>'.format(filename, keyword, res)
                 search_result.save()
 
-            str += '<br/><br/><br/>-------------------------------------------------------------------------<br/>'
-        return HttpResponse("Hello, world. You're testing!<br/>" + str)
+        results = SearchResult.objects.all()
+        context['results'] = results
+
+        return render(request, 'display.html', context)
