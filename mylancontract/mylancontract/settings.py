@@ -127,4 +127,3 @@ STATICFILES_DIRS = (
 # Media files
 MEDIA_ROOT = BASE_DIR + '/lanapp/static/'
 MEDIA_URL = '/lanapp/static/'
-

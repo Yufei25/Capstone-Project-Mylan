@@ -6,7 +6,7 @@ from django.db import models
 class SearchResult(models.Model):
     filename = models.CharField(max_length=400)
     keyword = models.CharField(max_length=100)
-    content = models.TextField()
+    content = models.TextField(blank=True)
 
     def __unicode__(self):
         return self.filename + '\t' + self.keyword + '\t' + self.content

@@ -10,8 +10,11 @@ from .search import *
 
 
 def index(request):
-    context = {}
-    return render(request, 'search.html', context)
+    return render(request, 'index.html', {})
+
+
+def search_portal(request):
+    return render(request, 'search.html', {})
 
 
 def test(request):
@@ -35,12 +38,16 @@ def test(request):
     return HttpResponse("Hello, world. You're testing!<br/>" + str)
 
 
+def upload(request):
+    return HttpResponse("Hello! You're on Upload Page!<br/>")
+
+
 def key_search(request):
     context = {}
     if 'keyword' not in request.POST or not request.POST['keyword']:
         raise Http404
     else:
-        SearchResult.objects.all().delete()
+        clean_data()
 
         keyword = request.POST['keyword']
         res_list = mylan_main(keyword)
@@ -63,3 +70,23 @@ def key_search(request):
         context['results'] = results
 
         return render(request, 'display.html', context)
+
+
+def display(request):
+    context = {}
+    results = SearchResult.objects.all()
+    context['results'] = results
+
+    return render(request, 'display.html', context)
+
+
+def export(request):
+    return HttpResponse("Hello! You're on Export Page!<br/>")
+
+
+def clean(request):
+    return HttpResponse("Hello! You're on Clean Page!<br/>")
+
+
+def clean_data():
+    SearchResult.objects.all().delete()
