@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.shortcuts import render
-
+from django.shortcuts import render, redirect,get_object_or_404
+from mimetypes import guess_type
 from django.http import HttpResponse, Http404
 from lanapp.forms import *
 
@@ -39,7 +39,36 @@ def test(request):
 
 
 def upload(request):
-    return HttpResponse("Hello! You're on Upload Page!<br/>")
+    return render(request, 'upload.html')
+
+
+def upload_contract(request):
+    for f in request.FILES.getlist('contracts'):
+        new_contract = Contract(filename=f.name, contract=f)
+        new_contract.save()
+    return redirect('show_contracts')
+
+def show_contracts(request):
+    contracts = Contract.objects.all()
+    return render(request, 'view_files.html', {"contracts": contracts})
+
+
+def delete_contract(request, id):
+    contract = get_object_or_404(Contract, id=id)
+    contract.delete()  
+    contracts = Contract.objects.all()
+    return redirect('show_contracts')
+
+def delete_all_contract(request):
+    Contract.objects.all().delete()
+    contract = Contract.objects.all()
+    return redirect('show_contracts')
+
+
+def get_contract(request, id):
+    contract = get_object_or_404(Contract, id=id)
+    content_type = guess_type(contract.filename)
+    return HttpResponse(contract.contract, content_type=content_type)
 
 
 def key_search(request):

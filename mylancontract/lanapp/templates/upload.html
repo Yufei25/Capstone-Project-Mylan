@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'css/bootstrap/bootstrap.min.css'%}" rel="stylesheet">
+
+</head>
+
+<body>
+<br/><br/><br/>
+<div style="margin-left:20px;margin-right: 50px">
+	<form  enctype="multipart/form-data" action="{% url 'upload_contract' %}" method = "post">
+		<input type="file" name="contracts" multiple />
+		<input type="submit" value="Upload" />
+		{% csrf_token %}
+	</form>
+
+
+</div>
+<br/>
+
+</body>
+</html>

@@ -1,6 +1,6 @@
 from django import forms
 
-from models import *
+from lanapp.models import *
 
 
 class SearchResultForm(forms.ModelForm):
