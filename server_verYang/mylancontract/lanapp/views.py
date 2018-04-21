@@ -10,6 +10,7 @@ from django.http import StreamingHttpResponse
 from .search_algorithm import *
 
 
+
 def index(request):
     return render(request, 'lanapp/index.html', {})
 
@@ -47,8 +48,37 @@ def upload_contract(request):
     for f in request.FILES.getlist('contracts'):
         new_contract = Contract(filename=f.name, contract=f)
         new_contract.save()
+        get_title_and_paragraphs(new_contract)
     return redirect('show_contracts')
     # return redirect('test')
+
+def get_title_and_paragraphs(contract):
+    STATIC_ROOT = os.path.join(os.path.dirname(__file__), 'static')
+    document = Document(STATIC_ROOT + "/" + contract.contract.name)
+
+    paras = []
+    for i in range(len(document.paragraphs)):
+    #for p in document.paragraphs:
+        # print(p.text)
+        p = document.paragraphs[i]
+        paras.append(p)
+
+        # create paragraph object
+        mypara = Paragraphs.objects.create(index=i, contract=contract, content=paras[i].text, highlight=False)
+        mypara.save()
+
+    # find contract title
+    start_flag = False
+    heading = ""
+    for para in paras:
+        # print para.alignment
+        if para.alignment == 1 and (not para.text.replace(u'\xa0', " ").lstrip() == ""):
+            start_flag = True
+            heading = heading + para.text + " "
+        if (not para.alignment == 1) and start_flag == True:
+            contract.title = heading
+            contract.save()
+            break
 
 
 def show_contracts(request):
@@ -87,8 +117,10 @@ def key_search(request):
         for tuple in res_list:
             # filename = tuple[0]
             keyword = tuple[1]
-            results = tuple[2]
-            contract = tuple[3]
+            types = tuple[2]
+            results = tuple[3]
+            warnings = tuple[4]
+            contract = tuple[5]
             for result in results:
                 if hasattr(result, '__iter__'):
                     text = [paras.text.encode('ascii', 'ignore') for paras in result]
@@ -103,7 +135,8 @@ def key_search(request):
                 # testing part
                 content = Content.objects.create(content=res, contract=contract, keyword=keyword)
                 content.save()
-                warning = Warning.objects.create(warning='test_warning', contract=contract, keyword=keyword)
+            for warning in warnings:
+                warning = Warning.objects.create(warning=warning, contract=contract, keyword=keyword)
                 warning.save()
 
         # results = SearchResult.objects.all()
@@ -116,13 +149,13 @@ def key_search(request):
 def mylan_main_test(keyword):
     ########################################################################
     STATIC_ROOT = os.path.join(os.path.dirname(__file__), 'static')
-    DIR = os.path.join(STATIC_ROOT, 'contracts').replace('\\', '/')
+    #DIR = os.path.join(STATIC_ROOT, 'contracts').replace('\\', '/')
 
     DIR2 = os.path.join(STATIC_ROOT, 'algorithm').replace('\\', '/')
     out_filename = 'Output_search.csv'
     out_path = os.path.join(DIR2, out_filename)
     stop_filename = os.path.join(DIR2 + '/res/', 'stop_words.txt')
-    header = ['File Name', 'Keywords', 'Content']  # Column names in output file
+    header = ['File Name', 'Keywords','Type', 'Content']  # Column names in output file
     ########################################################################
 
     res_list = []  # Input folder path
@@ -138,18 +171,21 @@ def mylan_main_test(keyword):
         contracts = Contract.objects.all()
 
         for contract in contracts:
-            filename = contract.filename
+            filename = contract.contract.name
             # Create a Document object of each of the files
-            document = Document(DIR + "/" + filename)
+            document = Document(STATIC_ROOT + "/" + filename)
 
+            warning_list = []
             # search if there are tables containing keyword
             if not len(document.tables) == 0:
                 if search_tables(document.tables, keyword, stop_set):
-                    print "Exception!! Keywords occur in tables"
+                    warning_list.append("Keywords occur in tables")
+                    print "Warning!! Keywords occur in tables"
 
             # search if there are pictures
             if not len(document.inline_shapes) == 0:
-                print "Exception!! pictures in the document"
+                warning_list.append("Pictures in the document.")
+                print "Warning!! pictures in the document"
 
             # A list to add all the paragraphs in the document
             paras = []
@@ -157,30 +193,33 @@ def mylan_main_test(keyword):
             '''
             The following for loop is used to add all the paragraphs in the document to the paras list object
             '''
-            for p in document.paragraphs:
+            for i in range(len(document.paragraphs)):
+            #for p in document.paragraphs:
                 # print(p.text)
+                p = document.paragraphs[i]
                 paras.append(p)
+
+                # create paragraph object
+                mypara = Paragraphs.objects.get(index=i, contract=contract)
+                mypara.highlight = False
+                mypara.save()
+            
 
             paras_number = len(paras)  # Find the number of paragraphs in the document
 
             keywordindex, idx_to_term = search_2(paras, keyword, stop_set)
 
-            results = []
-            keyword_lists = []
+            results = [] # the list to output as the 'result' column in csv file
+            keyword_lists = [] # the list to output as the 'keyword' column in csv file
+            type_list = []  # the list to output as the 'type' column in csv file
+            types = ["Heading", "Within content"]   # the two types of keywords
 
-            # find contract name
-            start_flag = False
-            heading = ""
-            for para in paras:
-                # print para.alignment
-                if para.alignment == 1 and (not para.text.replace(u'\xa0', " ").lstrip() == ""):
-                    start_flag = True
-                    heading = heading + para.text + " "
-                if (not para.alignment == 1) and start_flag == True:
-                    print "Contract heading: " + heading
-                    break
+            
             lastendindex = 0
             endindex = 0  # The index of the end of the last matched content
+            
+            # indicate the type of the keyword. 0 = heading, 1 = within content 
+            type_flag = 0  
 
             for index in keywordindex:
                 keyword = idx_to_term[index]
@@ -191,22 +230,33 @@ def mylan_main_test(keyword):
                 # If the keyword is not at the start of a paragraph, just extract this paragraph and don't match
                 # other paragraphs
                 if not keyword.lower() in paras[index].text[:60 + len(keyword)].lower():
+
                     result = paras[index]
                     endindex = index
+                    type_flag = 1
+                    mypara = Paragraphs.objects.get(index=index, contract=contract)
+                    mypara.highlight = True
+                    mypara.save()
+                    
                     # print '\tTarget Paragraph: [{0}]\n\t\t{1}\n'.format(index, paras[index].text.encode("utf-8"))
 
                 else:
+                    type_flag = 0
                     # print '\tTarget Paragraph: [{0}]\n\t\t{1}\n'.format(index, paras[index].text.encode("utf-8"))
                     target = find_patterns(paras, index, keyword, stop_set)  # Find the target pattern
 
                     if index == paras_number - 1:  # The last paragraph
                         result = paras[index]
+                        mypara = Paragraphs.objects.get(index=index, contract=contract)
+                        mypara.highlight = True
+                        mypara.save()
                     else:
-                        result, endindex = match(paras, target, index, stop_set)
+                        result, endindex = match(paras, target, index, stop_set, contract)
 
                 if endindex > lastendindex:
                     keyword_lists.append(keyword)
                     results.append(result)
+                    type_list.append(types[type_flag])
                     lastendindex = endindex
 
             # Output the result to a csv file
@@ -217,25 +267,26 @@ def mylan_main_test(keyword):
             for i in range(len(results)):
                 result = results[i]
                 keyword = keyword_lists[i]
+                mytype = type_list[i]
                 if hasattr(result, '__iter__'):
                     text = [paras.text.encode('ascii', 'ignore') for paras in result]
                     res = "\n".join(text)
                 else:
                     res = result.text.encode('ascii', 'ignore')
 
-                wr.writerow([filename, keyword, res])
+                wr.writerow([contract.filename, keyword, res])
 
             print '\n'
-            res_list.append((filename, keyword, results, contract))
+            res_list.append((contract.filename, keyword_lists, type_list, results, warning_list, contract))
 
     f.close()
     return res_list
 
 
-def display(request):
+def display(request, contractid):
     context = {}
-    results = SearchResult.objects.all()
-    context['results'] = results
+    paras = Paragraphs.objects.all().filter(contract_id=contractid).order_by(index)
+    context['paras'] = paras
 
     return render(request, 'lanapp/display.html', context)
 

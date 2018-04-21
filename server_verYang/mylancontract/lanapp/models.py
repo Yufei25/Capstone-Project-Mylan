@@ -4,6 +4,7 @@ from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 from django.template.loader import render_to_string
 from django.db.models import Max
+import os
 
 
 class SearchResult(models.Model):
@@ -21,6 +22,11 @@ class Contract(models.Model):
     title = models.CharField(max_length=400, default='default_title')
     upload_time = models.DateTimeField(auto_now_add=True)
     last_changed = models.DateTimeField(auto_now=True)
+
+    def delete(self,*args,**kwargs):
+        if os.path.isfile(self.contract.path):
+            os.remove(self.contract.path)
+        super(Contract, self).delete(*args,**kwargs)
 
     def __unicode__(self):
         return self.filename
@@ -41,6 +47,14 @@ class Contract(models.Model):
     def get_max_time():
         return Contract.objects.all().aggregate(Max('last_changed'))['last_changed__max'] or "1970-01-01T00:00+00:00"
 
+class Paragraphs(models.Model):
+    contract = models.ForeignKey(Contract, on_delete=models.CASCADE)
+    content = models.TextField(blank=True)
+    index = models.IntegerField()
+    highlight = models.BooleanField()
+
+    def __unicode__(self):
+        return self.filename
 
 class ContractComment(models.Model):
     comment = models.TextField(blank=True)

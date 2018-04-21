@@ -7,6 +7,7 @@ import sys
 import string
 from string import punctuation
 from string import maketrans
+from lanapp.models import *
 import os.path
 
 '''
@@ -888,12 +889,12 @@ return matched content and index of last paragraph in matched parts
 '''
 
 
-def match(paras, targetPatterns, startIndex, stop_set):
+def match(paras, targetPatterns, startIndex, stop_set, contract):
     i = startIndex + 1
     match = []  # Matched contents
 
     # Print patterns for debug
-    print '\tTarget Patterns: ' + str(parttern_translate(targetPatterns))
+    #print '\tTarget Patterns: ' + str(parttern_translate(targetPatterns))
 
     n = 0  # Number of nonempty paragraphs
     while (i < len(paras)):
@@ -925,7 +926,7 @@ def match(paras, targetPatterns, startIndex, stop_set):
         patterns.append(isManuallyListPara(p))
 
         # Print patterns for debug
-        print '\n\tNext Paragraph:\t{0}\n\n\t\t{1}'.format(str(parttern_translate(patterns)), p.text.encode("utf-8"))
+        #print '\n\tNext Paragraph:\t{0}\n\n\t\t{1}'.format(str(parttern_translate(patterns)), p.text.encode("utf-8"))
         n = n + 1
 
         # Find same pattern, stop iteration
@@ -941,19 +942,22 @@ def match(paras, targetPatterns, startIndex, stop_set):
                 matchflag = False
                 break
         if matchflag:
-            print 'Bingo Bingo Bingo Bingo'
+            #print 'Bingo Bingo Bingo Bingo'
             break
 
         i = i + 1
         # Not find same pattern, then just return the first paragraph
         if n > 10 or i == len(paras):
-            print "Exceptions: can't find same patterns"
+            #print "Exceptions: can't find same patterns"
             #             match.append(paras[startIndex])
             #             i = startIndex
             break
     # Append all matched paragraphs
     for x in range(startIndex, i):
         match.append(paras[x])
+        mypara = Paragraphs.objects.get(index=x, contract=contract)
+        mypara.highlight = True
+        mypara.save()
 
     return match, i - 1
 
@@ -1047,7 +1051,7 @@ def mylan_main():
     out_path = os.path.join(DIR, out_filename)
     directory_path = DIR + '/input/'
     stop_filename = os.path.join(DIR + '/res/', 'stop_words.txt')
-    header = ['File Name', 'Keywords', 'Content']  # Column names in output file
+    header = ['File Name', 'Keywords','Type', 'Content']  # Column names in output file
     ########################################################################
 
     res_list = []
@@ -1107,8 +1111,10 @@ def mylan_main():
             print '\tkeywordIndex: ' + str(keywordindex)
             print idx_to_term
 
-            results = []
-            keyword_lists = []
+            results = [] # the list to output as the 'result' column in csv file
+            keyword_lists = [] # the list to output as the 'keyword' column in csv file
+            type_list = []  # the list to output as the 'type' column in csv file
+            types = ["Heading", "Within content"]   # the two types of keywords
 
             # find contract name
             # print "111"
@@ -1126,6 +1132,9 @@ def mylan_main():
             lastendindex = 0
             endindex = 0  # The index of the end of the last matched content
 
+            # indicate the type of the keyword. 0 = heading, 1 = within content 
+            type_flag = 0  
+
             for index in keywordindex:
                 keyword = idx_to_term[index]
                 # If the paragraph has been matched before, ignore it
@@ -1137,9 +1146,11 @@ def mylan_main():
                 if not keyword.lower() in paras[index].text[:60 + len(keyword)].lower():
                     result = paras[index]
                     endindex = index
+                    type_flag = 1
                     print '\tTarget Paragraph: [{0}]\n\t\t{1}\n'.format(index, paras[index].text.encode("utf-8"))
 
                 else:
+                    type_flag = 0
                     print '\tTarget Paragraph: [{0}]\n\t\t{1}\n'.format(index, paras[index].text.encode("utf-8"))
                     target = find_patterns(paras, index, keyword, stop_set)  # Find the target pattern
 
@@ -1151,6 +1162,7 @@ def mylan_main():
                 if endindex > lastendindex:
                     keyword_lists.append(keyword)
                     results.append(result)
+                    type_list.append(types[type_flag])
                     lastendindex = endindex
 
             # Output the result to a csv file
@@ -1161,16 +1173,17 @@ def mylan_main():
             for i in range(len(results)):
                 result = results[i]
                 keyword = keyword_lists[i]
+                mytype = type_list[i]
                 if hasattr(result, '__iter__'):
                     text = [paras.text.encode('ascii', 'ignore') for paras in result]
                     res = "\n".join(text)
                 else:
                     res = result.text.encode('ascii', 'ignore')
 
-                wr.writerow([fileName, keyword, res])
+                wr.writerow([fileName, keyword, mytype, res])
 
             print '\n'
-            res_list.append((fileName, keyword, results))
+            res_list.append((fileName, keyword, mytype, results))
     print "end"
     f.close()
     return res_list
