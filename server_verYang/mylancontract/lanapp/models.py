@@ -44,7 +44,7 @@ class Contract(models.Model):
 
 class ContractComment(models.Model):
     comment = models.TextField(blank=True)
-    contract = models.ForeignKey(Contract)
+    contract = models.ForeignKey(Contract, on_delete=models.CASCADE)
     time = models.DateTimeField(auto_now_add=True)
     last_changed = models.DateTimeField(auto_now=True)
 
@@ -71,7 +71,7 @@ class ContractComment(models.Model):
 
 class Content(models.Model):
     content = models.TextField(blank=True)
-    contract = models.ForeignKey(Contract)
+    contract = models.ForeignKey(Contract, on_delete=models.CASCADE)
     keyword = models.CharField(max_length=100, default='test_keyword')
     time = models.DateTimeField(auto_now_add=True)
     last_changed = models.DateTimeField(auto_now=True)
@@ -98,7 +98,7 @@ class Content(models.Model):
 
 class ContentComment(models.Model):
     comment = models.TextField(blank=True)
-    content = models.ForeignKey(Content)
+    content = models.ForeignKey(Content, on_delete=models.CASCADE)
     time = models.DateTimeField(auto_now_add=True)
     last_changed = models.DateTimeField(auto_now=True)
 
@@ -125,7 +125,7 @@ class ContentComment(models.Model):
 
 class Warning(models.Model):
     warning = models.TextField(blank=True)
-    contract = models.ForeignKey(Contract)
+    contract = models.ForeignKey(Contract, on_delete=models.CASCADE)
     keyword = models.CharField(max_length=100, default='test_warning')
     time = models.DateTimeField(auto_now_add=True)
     last_changed = models.DateTimeField(auto_now=True)
@@ -152,7 +152,7 @@ class Warning(models.Model):
 
 class WarningComment(models.Model):
     comment = models.TextField(blank=True)
-    warning = models.ForeignKey(Warning)
+    warning = models.ForeignKey(Warning, on_delete=models.CASCADE)
     time = models.DateTimeField(auto_now_add=True)
     last_changed = models.DateTimeField(auto_now=True)
 
