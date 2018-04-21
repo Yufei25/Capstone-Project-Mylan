@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'css/bootstrap/bootstrap.min.css' %}" rel="stylesheet">
+
+</head>
+
+<body>
+<br/><br/><br/>
+<div style="margin-left:20px;margin-right: 50px">
+	{% for contract in contracts %}
+	<a href="">{{ contract.filename }}</a><a class="btn btn-lg" href="{% url 'delete_contract' contract.id %}">Delete</a><br>
+	{% endfor %}
+	<a class="btn btn-lg" href="{% url 'delete_all_contract' %}">Delete all</a>
+</div>
+<a class="btn btn-lg btn-primary" href="{% url 'index' %}">Return</a>
+<br/>
+
+</body>
+</html>

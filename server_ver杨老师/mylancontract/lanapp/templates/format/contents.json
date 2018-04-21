@@ -1,0 +1,1 @@
+{"max-time":"{{max_time|date:"c"}}", "items":[{% for content in contents %}{%spaceless%}{% include 'format/content.json' %}{%endspaceless%}{% if not forloop.last %}, {% endif %}{% endfor %}]}
