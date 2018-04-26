@@ -816,6 +816,30 @@ def is_upper_camel_case(paragraph, keyword, stop_set):
         return False
 
 
+'''
+Author: Yufei
+
+Iterate all the paragraphs and find the paragraph containing the keywords
+
+-paras = all paragraphs
+-keywords = search words
+
+return a list of paragraph index
+'''
+
+
+def search(paras, keywords):
+    index = []
+    i = 0
+    while (i < len(paras)):
+        p = paras[i]
+        # If the paragraph contains the keyword, add the index to the result
+        if keywords.lower() in p.text.lower():
+            index.append(i)
+        i = i + 1
+
+    return index
+
 
 '''
 Author: Yufei
@@ -872,10 +896,9 @@ def match(paras, targetPatterns, startIndex, stop_set, contract):
     # Print patterns for debug
     #print '\tTarget Patterns: ' + str(parttern_translate(targetPatterns))
 
-    warning_flag = False
     n = 0  # Number of nonempty paragraphs
     while (i < len(paras)):
-        warning_flag = False
+
         patterns = []
         p = paras[i]
         #         tmp = p.text.replace(u'\xa0', '')
@@ -925,7 +948,6 @@ def match(paras, targetPatterns, startIndex, stop_set, contract):
         i = i + 1
         # Not find same pattern, then just return the first paragraph
         if n > 10 or i == len(paras):
-            warning_flag = True
             #print "Exceptions: can't find same patterns"
             #             match.append(paras[startIndex])
             #             i = startIndex
@@ -937,8 +959,6 @@ def match(paras, targetPatterns, startIndex, stop_set, contract):
         if myparas.exists():
             mypara = myparas.first()
             mypara.highlight = True
-            if warning_flag:
-                mypara.warningflag = True
             mypara.save()
 
     return match, i - 1

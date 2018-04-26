@@ -2,11 +2,13 @@
 {% load static %}
 {% block title %}Home{% endblock %}
 {% block css %}
-<link href="{% static 'css/custom-style.css'%}" rel="stylesheet">
+<!--<link href="{% static 'css/custom-style.css'%}" rel="stylesheet">-->
 {% endblock %}
 
 {% block body %}
-<div class="container background" style="height:700px;">
+<br>
+<div class="container" style="height:650px;background-image: url(https://starkaerospace.com/wp-content/uploads/2014/06/background-world-map-1.gif);
+background-repeat: no-repeat;background-size: contain;background-color: white;">
     <div class="row">
         <div class="col-4"></div>
         <div class="col-4 card card-size indigo text-center z-depth-2 light-version py-4 px-5 card-shadow">
@@ -20,7 +22,7 @@
                            name="keyword" required
                            autofocus>
                     <br>
-                    <button class="btn btn-lg btn-primary btn-block btn-background" type="submit" disabled>Search</button>
+                    <button class="btn btn-lg btn-primary btn-block background" type="submit" disabled>Search</button>
                     {% csrf_token %}
                 </form>
             </div>
@@ -34,7 +36,7 @@
                            name="keyword" required
                            autofocus>
                     <br>
-                    <button class="btn btn-lg btn-primary btn-block btn-background" type="submit">Search</button>
+                    <button class="btn btn-lg btn-primary btn-block background" type="submit">Search</button>
                     {% csrf_token %}
                 </form>
             </div>

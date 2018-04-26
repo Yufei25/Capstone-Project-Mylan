@@ -297,7 +297,7 @@ def mylan_main_test(keyword):
                 else:
                     res = result.text.encode('ascii', 'ignore')
 
-                wr.writerow([contract.filename, keyword.encode('ascii', 'ignore'), mytype, res])
+                wr.writerow([contract.filename, keyword, mytype, res])
 
             print '\n'
             res_list.append((contract.filename, keyword_lists, type_list, results, warning_list, contract))

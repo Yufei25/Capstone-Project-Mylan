@@ -53,7 +53,6 @@ class Paragraphs(models.Model):
     index = models.IntegerField()
     highlight = models.BooleanField(default=False)
     endflag = models.BooleanField(default=False)
-    warningflag = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.filename

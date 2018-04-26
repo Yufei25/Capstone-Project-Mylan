@@ -46,9 +46,8 @@ body {
     size: 50px;
 }
 
-.btn-position {
-    margin-left: 920px;
-    margin-right: 10px;
+div.btn-position {
+    float: right;
 }
 
 .card-size {
@@ -80,15 +79,7 @@ body {
     border-color: #343a40;
 }
 
-.btn-background {
-    background-color: #343a40;
-    border-color: #343a40;
-}
 
-.btn-background:hover {
-    background-color: #22262a;
-    border-color: #22262a;
-}
 
 div.card-shadow {
   width: 250px;
@@ -101,11 +92,15 @@ div.large-card-shadow {
   text-align: center;
 }
 
-div.background {
-    background-image: url(https://starkaerospace.com/wp-content/uploads/2014/06/background-world-map-1.gif);
-    background-repeat: no-repeat;
-    background-size: contain;
-    background-color: white;
+
+button.background {
+    background-color: #343a40;
+    border-color: #343a40;
+}
+
+button.background:hover {
+    background-color: red;
+    border-color: #22262a;
 }
 
 .image-size {
