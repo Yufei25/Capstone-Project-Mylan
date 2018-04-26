@@ -1,26 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    {% load static %}
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <!-- Bootstrap core CSS -->
-    <link href="{% static 'css/bootstrap/bootstrap.min.css'%}" rel="stylesheet">
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Home{% endblock %}
+{% block css %}
 
-</head>
+<link href="{% static 'css/custom-style.css'%}" rel="stylesheet">
 
-<body>
-<br/><br/><br/>
-<div style="margin-left:20px;margin-right: 50px">
-	<form  enctype="multipart/form-data" action="{% url 'upload_contract' %}" method = "post">
-		<input type="file" name="contracts" multiple />
-		<input type="submit" value="Upload" />
-		{% csrf_token %}
-	</form>
+{% endblock %}
+{% block js %}
+{% endblock %}
 
+{% block body %}
 
+<div class="container background" style="height:700px;">
+    <div class="row">
+        <div class="col-4"></div>
+
+        <div class="col-4 card card-size indigo text-center z-depth-2 light-version py-4 px-5 card-shadow">
+            <div class="card-header card-header-size-upload">
+                <h3>Import Contracts</h3>
+                <p>(.doc/.docx)</p>
+            </div>
+            <div class="card-body card-body-size">
+                <form enctype="multipart/form-data" action="{% url 'upload_contract' %}" method="post">
+                    <!--<label class="custom-file">-->
+                    <!--<input type="file" id="file" class="custom-file-input" name="contracts" multiple/>-->
+                    <!--<span class="custom-file-control"></span>-->
+                    <!--</label>-->
+                    <input class="btn-block file-btn-border" type="file" id="upload_button" name="contracts"
+                           accept=".doc, .docx" multiple>
+                    <p></p>
+                    <input class="btn btn-lg btn-primary btn-block btn-size background" type="submit" value="Upload"/>
+                    {% csrf_token %}
+                </form>
+            </div>
+        </div>
+
+        <div class="col-4"></div>
+    </div>
 </div>
-<br/>
 
-</body>
-</html>
+{% endblock %}

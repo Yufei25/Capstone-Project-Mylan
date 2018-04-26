@@ -24,3 +24,48 @@ class SearchResultForm(forms.ModelForm):
             raise forms.ValidationError("Content is required.")
 
         return cleaned_data
+
+
+class ContractCommentForm(forms.Form):
+    comment = forms.CharField(max_length=2000,
+                              widget=forms.TextInput())
+
+    def clean(self):
+        cleaned_data = super(ContractCommentForm, self).clean()
+
+        comment = cleaned_data.get('comment')
+
+        if not comment:
+            raise forms.ValidationError("Contract Comment Error!")
+
+        return cleaned_data
+
+
+class ContentCommentForm(forms.Form):
+    comment = forms.CharField(max_length=2000,
+                              widget=forms.TextInput())
+
+    def clean(self):
+        cleaned_data = super(ContentCommentForm, self).clean()
+
+        comment = cleaned_data.get('comment')
+
+        if not comment:
+            raise forms.ValidationError("Content Comment Error!")
+
+        return cleaned_data
+
+
+class WarningCommentForm(forms.Form):
+    comment = forms.CharField(max_length=2000,
+                              widget=forms.TextInput())
+
+    def clean(self):
+        cleaned_data = super(WarningCommentForm, self).clean()
+
+        comment = cleaned_data.get('comment')
+
+        if not comment:
+            raise forms.ValidationError("Warning Comment Error!")
+
+        return cleaned_data

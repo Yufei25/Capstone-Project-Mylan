@@ -1,15 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    {% load static %}
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <!-- Bootstrap core CSS -->
-    <link href="{% static 'css/bootstrap/bootstrap.min.css'%}" rel="stylesheet">
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Home{% endblock %}
+{% block css %}
+  <link href="{% static 'css/custom-style.css'%}" rel="stylesheet">
+{% endblock %}
 
-</head>
-
-<body>
+{% block body %}
 <br/><br/>
 <a class="btn btn-lg btn-primary" href="{% url 'index' %}">Return</a>
 <div style="text-align: right; margin-right: 50px"><a class="btn btn-lg btn-primary" href="{% url 'export' %}">Export</a></div>
@@ -30,5 +26,4 @@
     <hr style="margin-left: 20px;margin-right: 20px">
 {% endfor %}
 
-</body>
-</html>
+{% endblock %}

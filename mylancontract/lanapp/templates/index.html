@@ -1,25 +1,131 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    {% load static %}
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <!-- Bootstrap core CSS -->
-    <link href="{% static 'css/bootstrap/bootstrap.min.css'%}" rel="stylesheet">
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Home{% endblock %}
+{% block css %}
+<link href="{% static 'css/custom-style.css'%}" rel="stylesheet">
+{% endblock %}
 
-</head>
 
-<body>
-<br/><br/><br/>
-<div style="margin-left:20px;margin-right: 50px"><a class="btn btn-lg btn-primary" href="{% url 'upload' %}">Upload</a></div>
-<br/>
-<div style="margin-left:20px;margin-right: 50px"><a class="btn btn-lg btn-primary" href="{% url 'search' %}">Search</a></div>
-<br/>
-<div style="margin-left:20px;margin-right: 50px"><a class="btn btn-lg btn-primary" href="{% url 'display' %}">Display</a></div>
-<br/>
-<div style="margin-left:20px;margin-right: 50px"><a class="btn btn-lg btn-primary" href="{% url 'export' %}">Export</a></div>
-<br/>
-<div style="margin-left:20px;margin-right: 50px"><a class="btn btn-lg btn-primary" href="{% url 'clean' %}">Clean</a></div>
-<br/>
-</body>
-</html>
+{% block body %}
+<div class="container">
+
+    <!-- Jumbotron Header -->
+    <br>
+    <header class="jumbotron my-4"
+            style="padding-top:50px;padding-bottom:50px;background-image: url(http://www.farooqihusain.com/images/PA/Oak-Brook-Contract-Review-Attorneys.jpg);background-repeat: no-repeat;background-size:1200px 400px;background-position:center;opacity:0.8;">
+        <h1 class="display-3" style="text-align:right;color:black">A Warm Welcome!</h1>
+        <p class="lead" style="text-align:right;color:black">
+            <br>
+            "There is simply no substitute for hard work when it comes to achieving success."
+        </p>
+        <footer class="blockquote-footer" style="text-align:right;color:black">Heather Bresch</footer>
+    </header>
+
+
+
+    <!--<div style="text-align:center;font-size:20px;">-->
+            <!--<span style="font-size:30px;">{{ count }}</span> contracts to review, the functions can be found at the top navigation bar-->
+    <!--</div>-->
+
+    <div class="card large-card-shadow">
+        <div class="card-body" style="text-align:center;font-size:20px;">
+            <span style="font-size:30px;">{{ count }}</span> contracts to review. Please read the following instructions.
+        </div>
+    </div>
+    <br>
+
+
+
+    <!-- Page Features -->
+    <div class="row text-center">
+
+        <div class="col-lg-3 d-flex align-items-stretch" style="height:25rem;">
+            <div class="card card-shadow">
+              <a href="{% url 'upload' %}">
+                <img class="card-img-top" src="{% static '/image/upload.png' %}" alt="import"
+                     style="margin-top:20px;margin-left:0px;height:10rem;width:60%;">
+              </a>
+                <div class="card-body">
+                    <h4 class="card-title">Import</h4>
+                    <ul>
+                      <li>Choose one/multiple contracts</li>
+                      <li>Only doc/docx files can be imported</li>
+                    </ul>
+                    <!-- <p class="card-text">
+                        Choose one/multiple contracts
+                        <br>
+                        Click "Import" button
+                    </p> -->
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 d-flex align-items-stretch">
+            <div class="card card-shadow">
+                <a href="{% url 'search' %}">
+                  <img class="card-img-top" src="{% static '/image/search.png' %}" alt="search"
+                     style="margin-top:20px;margin-left:0px;height:10rem;width:60%;">
+                </a>
+                <div class="card-body">
+                    <h4 class="card-title">Search</h4>
+                    <ul>
+                      <li>Input the search terms such as Change of Control</li>
+                      <li>The result will show automatically</li>
+                    </ul>
+                    <!-- <p class="card-text card-text-position">
+                        Input the search terms and click the "Search" button
+                        <br>
+                        The result will show automatically
+                    </p> -->
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 d-flex align-items-stretch">
+            <div class="card card-shadow">
+              <a href="{% url 'show_contracts' %}">
+                <img class="card-img-top" src="{% static '/image/contracts.png' %}" alt="contracts"
+                     style="margin-top:20px;margin-left:0px;height:10rem;width:60%;">
+                   </a>
+                <div class="card-body">
+                    <h4 class="card-title">Contracts</h4>
+                    <ul>
+                      <li>Review contract's title, filename, import time</li>
+                      <li>Delete any/all contracts or Import more contract</li>
+                    </ul>
+                    <!-- <p class="card-text">
+                        Review contract's title, filename, import time
+                        <br>
+                        Delete any/all contracts or Import more contract
+                    </p> -->
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 d-flex align-items-stretch">
+            <div class="card card-shadow">
+                <img class="card-img-top" src="{% static '/image/display.png' %}" alt="display"
+                     style="margin-top:20px;margin-left:50px;height:10rem;width:60%;">
+                <div class="card-body">
+                    <h4 class="card-title">Display</h4>
+                    <ul>
+                      <li>Comment the search result highlighted</li>
+                      <li>Go to another contracts via bottom links</li>
+                    </ul>
+                    <!-- <p class="card-text">
+                        Comment the search result highlighted
+                        <br>
+                        Go to another contracts via bottom links
+                    </p> -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- /.row -->
+
+</div>
+<!-- /.container -->
+
+
+{% endblock %}

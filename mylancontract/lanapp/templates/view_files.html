@@ -1,24 +1,58 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    {% load static %}
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <!-- Bootstrap core CSS -->
-    <link href="{% static 'css/bootstrap/bootstrap.min.css'%}" rel="stylesheet">
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Home{% endblock %}
+{% block css %}
+<link href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap4.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href="{% static 'css/custom-style.css'%}" rel="stylesheet">
 
-</head>
+{% endblock %}
+{% block js %}
+<script src="{% static 'js/view_contracts.js' %}"></script>
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
 
-<body>
-<br/><br/><br/>
-<div style="margin-left:20px;margin-right: 50px">
-	{% for contract in contracts %}
-	<a href="">{{ contract.filename }}</a><a class="btn btn-lg" href="{% url 'delete_contract' contract.id %}">Delete</a><br>
-	{% endfor %}
-	<a class="btn btn-lg" href="{% url 'delete_all_contract' %}">Delete all</a>
+{% endblock %}
+{% block body %}
+<br>
+<br>
+<div style="text-align:center">
+    <h2>All Contracts</h2>
 </div>
-<a class="btn btn-lg btn-primary" href="{% url 'index' %}">Return</a>
+
+<div class="row view-files-position" style="padding-top:20px;padding-left:100px;padding-right:100px;">
+
+    <table id="contracts_list" class="table table-striped table-bordered" style="width:100%;">
+        <thead style="font-size:16px">
+        <tr>
+            <th style="width:350px;">File Name</th>
+            <th style="width:350px;">Title</th>
+            <th style="width:200px;">Upload Time</th>
+            <th style="width:20px;">Delete</th>
+        </tr>
+        </thead>
+        <tbody style="font-size:13px;">
+        {% for contract in contracts %}
+        <tr>
+            <th>{{ contract.filename }}</th>
+            <th>{{ contract.title }}</th>
+            <th>{{ contract.upload_time }}</th>
+            <th>
+                <a class="btn btn-lg" href="{% url 'delete_contract' contract.id %}"><i class="fa fa-trash"></i></a>
+            </th>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <br>
+
+</div>
+<br>
+<a class="btn btn-lg btn-primary btn-size btn-position background" href="{% url 'delete_all_contract' %}">Delete all</a>
+<a class="btn btn-lg btn-primary btn-size background" href="{% url 'upload' %}">Upload more</a>
+
 <br/>
 
-</body>
-</html>
+
+{% endblock %}
