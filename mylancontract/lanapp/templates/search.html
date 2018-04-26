@@ -10,6 +10,21 @@
     <div class="row">
         <div class="col-4"></div>
         <div class="col-4 card card-size indigo text-center z-depth-2 light-version py-4 px-5 card-shadow">
+            {% if count == 0 %}
+            <div class="card-header card-header-size">
+                <h3>Please upload at least one contract to use search function.</h3>
+            </div>
+            <div class="card-body card-body-size">
+                <form class="form-login" method="post" action="{% url 'key_search' %}">
+                    <input type="text" class="form-control border-color" id="inputKeyword" placeholder="Search Terms"
+                           name="keyword" required
+                           autofocus>
+                    <br>
+                    <button class="btn btn-lg btn-primary btn-block btn-background" type="submit" disabled>Search</button>
+                    {% csrf_token %}
+                </form>
+            </div>
+            {% else %}
             <div class="card-header card-header-size">
                 <h3>Please type in terms</h3>
             </div>
@@ -19,10 +34,11 @@
                            name="keyword" required
                            autofocus>
                     <br>
-                    <button class="btn btn-lg btn-primary btn-block background" type="submit">Search</button>
+                    <button class="btn btn-lg btn-primary btn-block btn-background" type="submit">Search</button>
                     {% csrf_token %}
                 </form>
             </div>
+            {% endif %}
         </div>
         <div class="col-4"></div>
     </div>

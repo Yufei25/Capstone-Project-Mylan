@@ -17,7 +17,9 @@ def index(request):
 
 
 def search_portal(request):
-    return render(request, 'search.html', {})
+    contracts = Contract.objects.all()
+    count = contracts.count()
+    return render(request, 'search.html', {'count': count})
 
 
 # def test(request):
@@ -295,7 +297,7 @@ def mylan_main_test(keyword):
                 else:
                     res = result.text.encode('ascii', 'ignore')
 
-                wr.writerow([contract.filename, keyword, mytype, res])
+                wr.writerow([contract.filename, keyword.encode('ascii', 'ignore'), mytype, res])
 
             print '\n'
             res_list.append((contract.filename, keyword_lists, type_list, results, warning_list, contract))

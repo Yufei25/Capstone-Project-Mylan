@@ -80,12 +80,12 @@ body {
     border-color: #343a40;
 }
 
-.background {
+.btn-background {
     background-color: #343a40;
     border-color: #343a40;
 }
 
-.background:hover {
+.btn-background:hover {
     background-color: #22262a;
     border-color: #22262a;
 }
@@ -118,3 +118,7 @@ ul {
     list-style-position: inside;
     padding-left:0;
 }​
+
+.btn.btn-primary:disabled{
+    background-color: #727272;
+}
