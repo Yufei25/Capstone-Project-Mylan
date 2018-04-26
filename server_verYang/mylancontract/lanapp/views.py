@@ -58,20 +58,20 @@ def get_title_and_paragraphs(contract):
 
     paras = []
     for i in range(len(document.paragraphs)):
-    #for p in document.paragraphs:
-        # print(p.text)
+
         p = document.paragraphs[i]
         paras.append(p)
 
         # create paragraph object
-        mypara = Paragraphs.objects.create(index=i, contract=contract, content=paras[i].text, highlight=False)
+        if re.sub('\s|\xa0','',p.text)  == "":
+            continue
+        mypara = Paragraphs.objects.create(index=i, contract=contract, content=paras[i].text, highlight=False, endflag= False)
         mypara.save()
 
     # find contract title
     start_flag = False
     heading = ""
     for para in paras:
-        # print para.alignment
         if para.alignment == 1 and (not para.text.replace(u'\xa0', " ").lstrip() == ""):
             start_flag = True
             heading = heading + para.text + " "
@@ -94,7 +94,9 @@ def delete_contract(request, id):
 
 
 def delete_all_contract(request):
-    Contract.objects.all().delete()
+    contracts = Contract.objects.all()
+    for contract in contracts:
+        contract.delete()
     # contract = Contract.objects.all()
     return redirect('show_contracts')
 
@@ -199,9 +201,11 @@ def mylan_main_test(keyword):
                 p = document.paragraphs[i]
                 paras.append(p)
 
-                # create paragraph object
-                mypara = Paragraphs.objects.get(index=i, contract=contract)
+            # initial paragraph object
+            myparas = Paragraphs.objects.filter(contract=contract)
+            for mypara in myparas:
                 mypara.highlight = False
+                mypara.endflag = False
                 mypara.save()
             
 
@@ -230,7 +234,6 @@ def mylan_main_test(keyword):
                 # If the keyword is not at the start of a paragraph, just extract this paragraph and don't match
                 # other paragraphs
                 if not keyword.lower() in paras[index].text[:60 + len(keyword)].lower():
-
                     result = paras[index]
                     endindex = index
                     type_flag = 1
@@ -250,6 +253,8 @@ def mylan_main_test(keyword):
                         mypara = Paragraphs.objects.get(index=index, contract=contract)
                         mypara.highlight = True
                         mypara.save()
+                        endindex = index
+
                     else:
                         result, endindex = match(paras, target, index, stop_set, contract)
 
@@ -258,6 +263,12 @@ def mylan_main_test(keyword):
                     results.append(result)
                     type_list.append(types[type_flag])
                     lastendindex = endindex
+
+
+                    myparas = Paragraphs.objects.filter(index__lte=endindex, contract=contract).order_by('-index')
+                    mypara = myparas.first()
+                    mypara.endflag = True
+                    mypara.save()
 
             # Output the result to a csv file
             wr = csv.writer(f)
@@ -274,7 +285,7 @@ def mylan_main_test(keyword):
                 else:
                     res = result.text.encode('ascii', 'ignore')
 
-                wr.writerow([contract.filename, keyword, res])
+                wr.writerow([contract.filename, keyword,mytype, res])
 
             print '\n'
             res_list.append((contract.filename, keyword_lists, type_list, results, warning_list, contract))
@@ -325,7 +336,9 @@ def clean(request):
 
 
 def clean_data():
-    Contract.objects.all().delete()
+    contracts = Contract.objects.all()
+    for contract in contracts:
+        contract.delete()
     SearchResult.objects.all().delete()
 
 

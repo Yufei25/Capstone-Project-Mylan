@@ -51,7 +51,8 @@ class Paragraphs(models.Model):
     contract = models.ForeignKey(Contract, on_delete=models.CASCADE)
     content = models.TextField(blank=True)
     index = models.IntegerField()
-    highlight = models.BooleanField()
+    highlight = models.BooleanField(default=False)
+    endflag = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.filename

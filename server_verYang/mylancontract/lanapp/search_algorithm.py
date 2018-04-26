@@ -955,9 +955,11 @@ def match(paras, targetPatterns, startIndex, stop_set, contract):
     # Append all matched paragraphs
     for x in range(startIndex, i):
         match.append(paras[x])
-        mypara = Paragraphs.objects.get(index=x, contract=contract)
-        mypara.highlight = True
-        mypara.save()
+        myparas = Paragraphs.objects.filter(index=x, contract=contract)
+        if myparas.exists():
+            mypara = myparas.first()
+            mypara.highlight = True
+            mypara.save()
 
     return match, i - 1
 
