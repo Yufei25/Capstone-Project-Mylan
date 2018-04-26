@@ -17,9 +17,7 @@ def index(request):
 
 
 def search_portal(request):
-    contracts = Contract.objects.all()
-    count = contracts.count()
-    return render(request, 'search.html', {'count': count})
+    return render(request, 'search.html', {})
 
 
 # def test(request):

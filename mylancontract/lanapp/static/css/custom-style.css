@@ -80,7 +80,6 @@ div.btn-position {
 }
 
 
-
 div.card-shadow {
   width: 250px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
@@ -113,7 +112,3 @@ ul {
     list-style-position: inside;
     padding-left:0;
 }​
-
-.btn.btn-primary:disabled{
-    background-color: #727272;
-}
