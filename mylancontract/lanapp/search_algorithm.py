@@ -933,13 +933,22 @@ def match(paras, targetPatterns, startIndex, stop_set, contract):
     # Append all matched paragraphs
     for x in range(startIndex, i):
         match.append(paras[x])
-        myparas = Paragraphs.objects.filter(index=x, contract=contract)
-        if myparas.exists():
-            mypara = myparas.first()
-            mypara.highlight = True
-            if warning_flag:
-                mypara.warningflag = True
-            mypara.save()
+
+    if warning_flag:
+        Paragraphs.objects.filter(index__in=range(startIndex, i), contract=contract).update(highlight=True, warningflag=True)
+    else:
+        Paragraphs.objects.filter(index__in=range(startIndex, i), contract=contract).update(highlight=True)
+
+    lastp = Paragraphs.objects.get(index=i-1, contract=contract)
+    lastp.endflag=True
+    lastp.save()
+        # myparas = Paragraphs.objects.filter(index=x, contract=contract)
+        # if myparas.exists():
+        #     mypara = myparas.first()
+        #     mypara.highlight = True
+        #     if warning_flag:
+        #         mypara.warningflag = True
+        #     mypara.save()
 
     return match, i - 1
 

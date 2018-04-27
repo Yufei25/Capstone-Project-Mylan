@@ -54,6 +54,7 @@ class Paragraphs(models.Model):
     highlight = models.BooleanField(default=False)
     endflag = models.BooleanField(default=False)
     warningflag = models.BooleanField(default=False)
+    blankflag = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.filename
