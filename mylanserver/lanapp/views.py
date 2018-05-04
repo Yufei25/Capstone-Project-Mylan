@@ -119,7 +119,7 @@ def key_search(request):
 
             for warning in warnings:
                 warning_create_list.append(Warning(warning=warning, contract=contract, keyword=keyword))
-        Content.objects.bulk_create(content_create_list)
+        # Content.objects.bulk_create(content_create_list)
         Warning.objects.bulk_create(warning_create_list)
 
         context = {}
@@ -139,6 +139,9 @@ def key_search(request):
         context['warning_count'] = len(context['all_warnings'])
 
         content_list =[]
+
+        Paragraphs.objects.filter(endflag=first_contract.id)
+
         target_content_objects = Content.objects.filter(contract_id=first_contract.id)
         for content in target_content_objects:
             content_list.append(content.content)
