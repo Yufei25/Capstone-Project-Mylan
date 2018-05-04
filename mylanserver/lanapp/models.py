@@ -38,23 +38,11 @@ class Contract(models.Model):
         return Contract.objects.all().aggregate(Max('last_changed'))['last_changed__max'] or "1970-01-01T00:00+00:00"
 
 
-class Paragraphs(models.Model):
-    contract = models.ForeignKey(Contract, on_delete=models.CASCADE)
-    content = models.TextField(blank=True)
-    index = models.IntegerField()
-    highlight = models.BooleanField(default=False)
-    endflag = models.BooleanField(default=False)
-    warningflag = models.BooleanField(default=False)
-    blankflag = models.BooleanField(default=False)
-
-    def __unicode__(self):
-        return self.content
-
-
 class Content(models.Model):
     content = models.TextField(blank=True)
     contract = models.ForeignKey(Contract, on_delete=models.CASCADE)
     keyword = models.CharField(max_length=100, default='test_keyword')
+    location = models.CharField(max_length=100)
     time = models.DateTimeField(auto_now_add=True)
     last_changed = models.DateTimeField(auto_now=True)
 
@@ -77,6 +65,29 @@ class Content(models.Model):
         return Content.objects.all().aggregate(Max('last_changed'))['last_changed__max'] \
                or "1970-01-01T00:00+00:00"
 
+
+
+class ContentComment(models.Model):
+    comment = models.TextField(blank=True)
+    content = models.ForeignKey(Content, on_delete=models.CASCADE)
+    time = models.DateTimeField(auto_now_add=True)
+    last_changed = models.DateTimeField(auto_now=True)
+
+    def __unicode__(self):
+        return self.comment
+
+class Paragraphs(models.Model):
+    contract = models.ForeignKey(Contract, on_delete=models.CASCADE)
+    text = models.TextField(blank=True)
+    index = models.IntegerField()
+    highlight = models.BooleanField(default=False)
+    endflag = models.BooleanField(default=False)
+    warningflag = models.BooleanField(default=False)
+    blankflag = models.BooleanField(default=False)
+    content = models.ForeignKey(Content, on_delete=models.CASCADE, null=True)
+
+    def __unicode__(self):
+        return self.content
 
 class Warning(models.Model):
     warning = models.TextField(blank=True)

@@ -48,9 +48,9 @@ def get_title_and_paragraphs(contract):
 
         # create paragraph object
         if re.sub('\s|\xa0', '', p.text) == "":
-            create_list.append(Paragraphs(index=i, contract=contract, content=paras[i].text, blankflag=True))
+            create_list.append(Paragraphs(index=i, contract=contract, text=paras[i].text, blankflag=True))
         else:
-            create_list.append(Paragraphs(index=i, contract=contract, content=paras[i].text))
+            create_list.append(Paragraphs(index=i, contract=contract, text=paras[i].text))
     Paragraphs.objects.bulk_create(create_list)
 
     # find contract title
@@ -96,6 +96,7 @@ def key_search(request):
     if 'keyword' not in request.POST or not request.POST['keyword']:
         raise Http404
     else:
+
         keyword = request.POST['keyword']
         res_list = mylan_main_test(keyword)
         content_create_list = []
@@ -107,19 +108,16 @@ def key_search(request):
             results = tuple[3]
             warnings = tuple[4]
             contract = tuple[5]
-            for result in results:
-                if hasattr(result, '__iter__'):
-                    text = [paras.text.encode('ascii', 'ignore') for paras in result]
-                    res = "\n".join(text)
+            # for result in results:
+            #     if hasattr(result, '__iter__'):
+            #         text = [paras.text.encode('ascii', 'ignore') for paras in result]
+            #         res = "\n".join(text)
 
-                else:
-                    res = result.text.encode('ascii', 'ignore')
-
-                content_create_list.append(Content(content=res, contract=contract, keyword=keyword))
+            #     else:
+            #         res = result.text.encode('ascii', 'ignore')
 
             for warning in warnings:
                 warning_create_list.append(Warning(warning=warning, contract=contract, keyword=keyword))
-        Content.objects.bulk_create(content_create_list)
         Warning.objects.bulk_create(warning_create_list)
 
         context = {}
@@ -139,11 +137,7 @@ def key_search(request):
         context['warning_count'] = len(context['all_warnings'])
 
         content_list =[]
-        target_content_objects = Content.objects.filter(contract_id=first_contract.id)
-        for content in target_content_objects:
-            content_list.append(content.content)
-        context['content_count'] = len(list(set(content_list)))
-
+        context['content_count'] = Content.objects.filter(contract_id=first_contract.id).count()
         return render(request, 'result.html', context)
 
 def mylan_main_test(keyword):
@@ -198,8 +192,9 @@ def mylan_main_test(keyword):
                 p = document.paragraphs[i]
                 paras.append(p)
 
-            # initial paragraph object
-            Paragraphs.objects.filter(contract=contract).update(highlight=False, endflag=False)
+            # initial paragraph object and content object
+            Paragraphs.objects.filter(contract=contract).update(highlight=False, endflag=False, warningflag=False, content=None)
+            Content.objects.all().delete()
 
             paras_number = len(paras)  # Find the number of paragraphs in the document
 
@@ -219,10 +214,13 @@ def mylan_main_test(keyword):
                 # other paragraphs
                 if not key.lower() in paras[index].text[:60 + len(key)].lower():
                     result = paras[index]
+                    content = Content(content=paras[index].text, contract=contract, keyword=key, location="Within Content")
+                    content.save()
                     endindex = index
                     type_flag = 1
                     mypara = Paragraphs.objects.get(index=index, contract=contract)
                     mypara.highlight = True
+                    mypara.content = content
                     mypara.save()
 
                 else:
@@ -237,7 +235,7 @@ def mylan_main_test(keyword):
                         endindex = index
 
                     else:
-                        result, endindex = match(paras, target, index, stop_set, contract)
+                        result, endindex = match(paras, target, index, stop_set, contract, lastendindex, key)
 
                 if endindex > lastendindex:
                     keyword_lists.append(key)
@@ -327,10 +325,7 @@ def get_contract_display(request):
     context['warning_count'] = len(context['all_warnings'])
 
     content_list = []
-    target_content_objects = Content.objects.filter(contract_id=first_contract.id)
-    for content in target_content_objects:
-        content_list.append(content.content)
-    context['content_count'] = len(list(set(content_list)))
+    context['content_count'] = Content.objects.filter(contract_id=current_contract.id).count()
 
     return render(request, 'result.html', context)
 
@@ -358,10 +353,7 @@ def get_current_contract(request, contract_id):
     context['warning_count'] = len(context['all_warnings'])
 
     content_list = []
-    target_content_objects = Content.objects.filter(contract_id=current_contract.id)
-    for content in target_content_objects:
-        content_list.append(content.content)
-    context['content_count'] = len(list(set(content_list)))
+    context['content_count'] = Content.objects.filter(contract_id=current_contract.id).count()
     return render(request, 'result.html', context)
 
 
@@ -388,10 +380,7 @@ def get_print_contract(request, contract_id):
     context['warning_count'] = len(context['all_warnings'])
 
     content_list = []
-    target_content_objects = Content.objects.filter(contract_id=current_contract.id)
-    for content in target_content_objects:
-        content_list.append(content.content)
-    context['content_count'] = len(list(set(content_list)))
+    context['content_count'] = Content.objects.filter(contract_id=current_contract.id).count()
     return render(request, 'print.html', context)
 
 

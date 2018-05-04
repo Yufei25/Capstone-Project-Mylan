@@ -865,7 +865,7 @@ return matched content and index of last paragraph in matched parts
 '''
 
 
-def match(paras, targetPatterns, startIndex, stop_set, contract):
+def match(paras, targetPatterns, startIndex, stop_set, contract, lastendindex, key):
     i = startIndex + 1
     match = []  # Matched contents
 
@@ -934,14 +934,24 @@ def match(paras, targetPatterns, startIndex, stop_set, contract):
     for x in range(startIndex, i):
         match.append(paras[x])
 
-    if warning_flag:
-        Paragraphs.objects.filter(index__in=range(startIndex, i), contract=contract).update(highlight=True, warningflag=True)
-    else:
-        Paragraphs.objects.filter(index__in=range(startIndex, i), contract=contract).update(highlight=True)
+    if i > lastendindex:
+        for result in match:
+            if hasattr(result, '__iter__'):
+                text = [paras.text.encode('ascii', 'ignore') for paras in result]
+                res = "\n".join(text)
 
-    lastp = Paragraphs.objects.get(index=i-1, contract=contract)
-    lastp.endflag=True
-    lastp.save()
+            else:
+                res = result.text.encode('ascii', 'ignore')
+        content = Content(content=res, contract=contract, keyword=key,location="Heading")
+        content.save()
+        if warning_flag:
+            Paragraphs.objects.filter(index__in=range(startIndex, i), contract=contract).update(content=content, highlight=True, warningflag=True)
+        else:
+            Paragraphs.objects.filter(index__in=range(startIndex, i), contract=contract).update(content=content, highlight=True)
+
+        lastp = Paragraphs.objects.get(index=i-1, contract=contract)
+        lastp.endflag=True
+        lastp.save()
         # myparas = Paragraphs.objects.filter(index=x, contract=contract)
         # if myparas.exists():
         #     mypara = myparas.first()
