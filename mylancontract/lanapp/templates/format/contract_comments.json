@@ -1,1 +1,0 @@
-{"max-time":"{{max_time|date:"c"}}", "items":[{% for contract_comment in contract_comments %}{%spaceless%}{% include 'format/contract_comment.json' %}{%endspaceless%}{% if not forloop.last %}, {% endif %}{% endfor %}]}
