@@ -59,6 +59,7 @@ def get_title_and_paragraphs(contract):
     document = Document(STATIC_ROOT + "/" + contract.contract.name)
 
     paras = []
+    create_list = []
     for i in range(len(document.paragraphs)):
 
         p = document.paragraphs[i]
@@ -66,10 +67,10 @@ def get_title_and_paragraphs(contract):
 
         # create paragraph object
         if re.sub('\s|\xa0', '', p.text) == "":
-            continue
-        mypara = Paragraphs.objects.create(index=i, contract=contract, content=paras[i].text, highlight=False,
-                                           endflag=False)
-        mypara.save()
+            create_list.append(Paragraphs(index=i, contract=contract, content=paras[i].text, blankflag=True))
+        else:
+            create_list.append(Paragraphs(index=i, contract=contract, content=paras[i].text))
+    Paragraphs.objects.bulk_create(create_list)
 
     # find contract title
     start_flag = False
@@ -119,6 +120,8 @@ def key_search(request):
 
         keyword = request.POST['keyword']
         res_list = mylan_main_test(keyword)
+        content_create_list = []
+        warning_create_list = []
         for tuple in res_list:
             # filename = tuple[0]
             keyword = tuple[1]
@@ -138,12 +141,12 @@ def key_search(request):
                 # search_result.save()
 
                 # testing part
-                content = Content.objects.create(content=res, contract=contract, keyword=keyword)
-                content.save()
-            for warning in warnings:
-                warning = Warning.objects.create(warning=warning, contract=contract, keyword=keyword)
-                warning.save()
+                content_create_list.append(Content(content=res, contract=contract, keyword=keyword))
 
+            for warning in warnings:
+                warning_create_list.append(Warning(warning=warning, contract=contract, keyword=keyword))
+        Content.objects.bulk_create(content_create_list)
+        Warning.objects.bulk_create(warning_create_list)
         # results = SearchResult.objects.all()
         # context['results'] = results
 
@@ -215,11 +218,7 @@ def mylan_main_test(keyword):
                 paras.append(p)
 
             # initial paragraph object
-            myparas = Paragraphs.objects.filter(contract=contract)
-            for mypara in myparas:
-                mypara.highlight = False
-                mypara.endflag = False
-                mypara.save()
+            Paragraphs.objects.filter(contract=contract).update(highlight=False, endflag=False)
 
             paras_number = len(paras)  # Find the number of paragraphs in the document
 
@@ -237,14 +236,14 @@ def mylan_main_test(keyword):
             type_flag = 0
 
             for index in keywordindex:
-                keyword = idx_to_term[index]
+                key = idx_to_term[index]
                 # If the paragraph has been matched before, ignore it
                 # if index <= endindex:
                 #     continue
 
                 # If the keyword is not at the start of a paragraph, just extract this paragraph and don't match
                 # other paragraphs
-                if not keyword.lower() in paras[index].text[:60 + len(keyword)].lower():
+                if not key.lower() in paras[index].text[:60 + len(key)].lower():
                     result = paras[index]
                     endindex = index
                     type_flag = 1
@@ -257,7 +256,7 @@ def mylan_main_test(keyword):
                 else:
                     type_flag = 0
                     # print '\tTarget Paragraph: [{0}]\n\t\t{1}\n'.format(index, paras[index].text.encode("utf-8"))
-                    target = find_patterns(paras, index, keyword, stop_set)  # Find the target pattern
+                    target = find_patterns(paras, index, key, stop_set)  # Find the target pattern
 
                     if index == paras_number - 1:  # The last paragraph
                         result = paras[index]
@@ -270,7 +269,7 @@ def mylan_main_test(keyword):
                         result, endindex = match(paras, target, index, stop_set, contract)
 
                 if endindex > lastendindex:
-                    keyword_lists.append(keyword)
+                    keyword_lists.append(key)
                     results.append(result)
                     type_list.append(types[type_flag])
                     lastendindex = endindex
@@ -287,7 +286,7 @@ def mylan_main_test(keyword):
             # for result in results:
             for i in range(len(results)):
                 result = results[i]
-                keyword = keyword_lists[i]
+                key = keyword_lists[i]
                 mytype = type_list[i]
                 if hasattr(result, '__iter__'):
                     text = [paras.text.encode('ascii', 'ignore') for paras in result]
@@ -295,7 +294,11 @@ def mylan_main_test(keyword):
                 else:
                     res = result.text.encode('ascii', 'ignore')
 
+<<<<<<< HEAD
                 wr.writerow([contract.filename, keyword, mytype, res])
+=======
+                wr.writerow([contract.filename, key.encode('ascii', 'ignore'), mytype, res])
+>>>>>>> f7298dd8671b2c32eeec9de1ad8174a0dcb59578
 
             print '\n'
             res_list.append((contract.filename, keyword_lists, type_list, results, warning_list, contract))
@@ -306,7 +309,7 @@ def mylan_main_test(keyword):
 
 def display(request, contractid):
     context = {}
-    paras = Paragraphs.objects.all().filter(contract_id=contractid).order_by(index)
+    paras = Paragraphs.objects.filter(contract_id=contractid).order_by(index)
     context['paras'] = paras
 
     return render(request, 'lanapp/display.html', context)
@@ -526,7 +529,7 @@ def get_contract_display(request):
 def get_current_contract(request, contract_id):
     context = {}
     contract_object = Contract.objects.all()
-    current_contract = Contract.objects.all().get(id=contract_id)
+    current_contract = Contract.objects.get(id=contract_id)
     content_object = Paragraphs.objects.filter(contract_id=current_contract.id)
     context['warnings'] = Warning.objects.filter(contract_id=current_contract.id)
     current_list=[]

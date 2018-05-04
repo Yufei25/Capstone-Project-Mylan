@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Home{% endblock %}
+{% block css %}
+    <link href="{% static 'css/custom-style.css' %}" rel="stylesheet">
+{% endblock %}
+
+
+{% block body %}
+    <div class="container">
+
+        <!-- Jumbotron Header -->
+        <header id="welcome-header" class="jumbotron my-4">
+            <h1 class="display-3"><strong>A Warm Welcome!</strong></h1>
+            <p class="lead">
+                <br>
+                <strong>"There is simply no substitute for hard work when it comes to achieving success."</strong>
+            </p>
+            <footer><strong>——Heather Bresch</strong></footer>
+        </header>
+
+        <div class="card large-card-shadow">
+            <div class="card-body brief-intro">
+                <span class="brief-intro-emphasis">{{ count }}</span> contracts to review. Please read the
+                following instructions.
+            </div>
+        </div>
+        <br>
+
+        <!-- Page Features -->
+        <div class="row text-center">
+
+            <div class="col-lg-3 d-flex align-items-stretch">
+                <div class="card card-shadow">
+                    <a href="{% url 'upload' %}">
+                        <img id="welcome-overview" class="card-img-top welcome-features"
+                             src="{% static '/image/upload.png' %}" alt="import">
+                    </a>
+                    <div class="card-body">
+                        <h4 class="card-title">Import</h4>
+                        <ul>
+                            <li>Choose one/multiple contracts</li>
+                            <li>Only doc/docx files can be imported</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 d-flex align-items-stretch">
+                <div class="card card-shadow">
+                    <a href="{% url 'search' %}">
+                        <img class="card-img-top welcome-features" src="{% static '/image/search.png' %}" alt="search">
+                    </a>
+                    <div class="card-body">
+                        <h4 class="card-title">Search</h4>
+                        <ul>
+                            <li>Input the search terms such as "Change of Control"</li>
+                            <li>The result will show automatically</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 d-flex align-items-stretch">
+                <div class="card card-shadow">
+                    <a href="{% url 'show_contracts' %}">
+                        <img class="card-img-top welcome-features" src="{% static '/image/contracts.png' %}"
+                             alt="contracts">
+                    </a>
+                    <div class="card-body">
+                        <h4 class="card-title">Contracts</h4>
+                        <ul>
+                            <li>Review contract's title, filename, import time</li>
+                            <li>Delete any/all contracts or Import more contract</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 d-flex align-items-stretch">
+                <div class="card card-shadow">
+                    <a>
+                        <img class="card-img-top welcome-features" src="{% static '/image/display.png' %}"
+                             alt="display">
+                    </a>
+                    <div class="card-body">
+                        <h4 class="card-title">Display</h4>
+                        <ul>
+                            <li>Comment the search result highlighted</li>
+                            <li>Go to another contracts via a folder icon</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+{% endblock %}

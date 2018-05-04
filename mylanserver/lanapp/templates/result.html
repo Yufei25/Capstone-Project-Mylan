@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Results{% endblock %}
+{% block css %}
+
+    <!-- Custom styles for this template -->
+    <link href="{% static 'css/dashboardtest.css' %}" rel="stylesheet">
+    <link href="{% static 'css/custom-style.css' %}" rel="stylesheet">
+    <link href="{% static 'css/results-page-style.css' %}" rel="stylesheet">
+    <script src="{% static 'js/results-page.js' %}"></script>
+
+{% endblock %}
+
+{% block body %}
+
+    <div class="container-fluid">
+        <div class="row">
+            <nav id="results-nav" class="col-md-2 d-none d-md-block bg-light sidebar">
+                <div class="sidebar-sticky">
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>Export</span>
+                    </h6>
+
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="{% url 'get_print_contract' contract_id %}"
+                               target="view_window">
+                                <span data-feather="printer"></span>
+                                Print Current <span class="sr-only">(current)</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'export' %}">
+                                <span data-feather="external-link"></span>
+                                Export All
+                            </a>
+                        </li>
+
+                    </ul>
+
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>All Files</span>
+                    </h6>
+
+
+                    <ul class="nav flex-column">
+                        {% for contract in all_contracts %}
+                            <li class="nav-item">
+                                <a class="nav-link active list_btn" href="{% url 'get_current_contract' contract.id %}">
+                                    <span data-feather="file-text"></span>
+                                    {{ contract.filename }} <span class="sr-only">(current)</span>
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </nav>
+
+            <main id="results-content" role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+                <div id="dropdownbox"
+                     class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <div>
+                        <div class="header" id="dropdownboxheader">
+                            <h2 class="brief-intro">{{ contract_name }}</h2>
+                            <div>
+                                <h4 class="brief-intro"> This contract has <span
+                                        class="brief-intro-emphasis">{{ content_count }}</span> Contents and <span
+                                        class="brief-intro-emphasis">{{ warning_count }}</span> Warnings</h4>
+                            </div>
+                            <div class="progress-container" style="position: fixed;">
+                                <div class="progress-bar" id="myBar"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content" id="results-content">
+                    <br/>
+
+                    {% for warning in all_warnings %}
+                        <p class="warning-color">{{ warning }}</p>
+                    {% endfor %}
+
+                    {% for content in all_content %}
+                        {% if content.highlight and content.warningflag  and not  content.blankflag %}
+                            <div class="results-content-align results-content-warningflag-color">
+                                <u>{{ content.content }}</u></div>
+                            <br>
+
+                            {% if content.endflag %}
+                                <h2>Comments</h2>
+                                <textarea class="results-comments" rows="3" cols="150"></textarea>
+                            {% endif %}
+
+                        {% elif content.highlight and not content.blankflag %}
+                            <div class="results-content-align results-content-highlight-color">
+                                <u>{{ content.content }}</u>
+                            </div>
+                            <br>
+                            {% if content.endflag %}
+                                <h2>Comments</h2>
+                                <textarea class="results-comments" rows="3" cols="150"></textarea>
+                            {% endif %}
+
+
+                        {% elif content.highlight and content.blankflag %}
+                            {% if content.endflag %}
+                                <h2>Comments</h2>
+                                <textarea class="results-comments" rows="3" cols="150"></textarea>
+                            {% endif %}
+
+
+                        {% else %}
+                            {% if not content.blankflag %}
+                                <div class="results-content-align">{{ content.content }}</div>
+                                <br>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </main>
+        </div>
+    </div>
+    <!-- Icons -->
+    <script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
+    <script>
+        feather.replace()
+    </script>
+
+{% endblock %}

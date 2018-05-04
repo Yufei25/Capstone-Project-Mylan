@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Home{% endblock %}
+{% block css %}
+    <link href="{% static 'css/dataTables.bootstrap4.min.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="{% static 'css/custom-style.css' %}" rel="stylesheet">
+
+{% endblock %}
+{% block js %}
+    <script src="{% static 'js/view_contracts.js' %}"></script>
+    <script src="{% static 'js/jquery-1.12.4.js' %}"></script>
+    <script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'js/dataTables.bootstrap4.min.js' %}"></script>
+
+{% endblock %}
+{% block body %}
+    <br>
+    <br>
+    <div id="view-file-title">
+        <h2>All Contracts</h2>
+    </div>
+    <div class="row" id="view-file-list">
+        <table id="contracts_list" class="table table-striped table-bordered">
+            <thead id="view-file-thead">
+            <tr>
+                <th id="view-file-column1">File Name</th>
+                <th id="view-file-column2">Title</th>
+                <th id="view-file-column3">Upload Time</th>
+                <th id="view-file-column4">Delete</th>
+            </tr>
+            </thead>
+            <tbody id="view-file-tbody">
+            {% for contract in contracts %}
+                <tr>
+                    <th>{{ contract.filename }}</th>
+                    <th>{{ contract.title }}</th>
+                    <th>{{ contract.upload_time }}</th>
+                    <th>
+                        <a class="btn btn-lg" href="{% url 'delete_contract' contract.id %}"><i class="fa fa-trash"></i></a>
+                    </th>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <br>
+        <div>
+            <a class="confirm-delete  btn btn-lg btn-primary btn-size btn-background"
+               href="{% url 'delete_all_contract' %}">Delete all</a>
+            <a class="btn btn-lg btn-primary btn-size btn-background" href="{% url 'upload' %}">Import more</a>
+        </div>
+    </div>
+    <br>
+{% endblock %}

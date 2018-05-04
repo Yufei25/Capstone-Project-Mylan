@@ -1,0 +1,16 @@
+{% load static %}
+<div id='content-{{ content_id }}'>
+    <p>I am the content template</p>
+    <p>{{ content }}</p>
+    <p>{{ keyword }}</p>
+    <p>{{ time }}</p>
+    <div id='content-comment-list-{{ content_id }}'></div>
+    <div>
+        <input type='text' id='content-comment-field-{{ content_id }}'
+               class='form-control' placeholder='Comments'
+               name='comment'>
+        <button name='content-comment-button-{{ content_id }}'
+                onclick='addContentComment({{ content_id }})'>Content Comment
+        </button>
+    </div>
+</div>
