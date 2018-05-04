@@ -1,0 +1,10 @@
+{% extends "result.html" %}
+{% load static %}
+{% block css %}
+    <!-- Custom styles for this template -->
+    <link href="{% static 'css/dashboardtest.css' %}" rel="stylesheet">
+    <link href="{% static 'css/custom-style.css' %}" rel="stylesheet">
+    <link href="{% static 'css/results-page-style.css' %}" rel="stylesheet">
+    <script src="{% static 'js/results-page.js' %}"></script>
+    <script src="{% static 'js/print-page.js' %}"></script>
+{% endblock %}

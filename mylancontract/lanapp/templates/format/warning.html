@@ -1,0 +1,16 @@
+{% load static %}
+<div id='warning-{{ warning_id }}'>
+    <p>I am the warning template</p>
+    <p>{{ warning }}</p>
+    <p>{{ keyword }}</p>
+    <p>{{ time }}</p>
+    <div id='warning-comment-list-{{ warning_id }}'></div>
+    <div>
+        <input type='text' id='warning-comment-field-{{ warning_id }}'
+               class='form-control' placeholder='Comments'
+               name='comment'>
+        <button name='warning-comment-button-{{ warning_id }}'
+                onclick='addWarningComment({{ warning_id }})'>Warning Comment
+        </button>
+    </div>
+</div>

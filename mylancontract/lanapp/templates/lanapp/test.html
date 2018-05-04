@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="{% static 'js/jquery-3.2.1.min.js' %}" type="text/javascript"></script>
+    <script src="{% static 'js/test.js' %}" type="text/javascript"></script>
+</head>
+<body>
+
+<div>
+    <ul id="contract-list">
+        {% for contract in contracts %}
+            <li id='contract-{{ contract.id }}'>
+                <div>
+                    <p>{{ contract.filename }}</p>
+                    <p>{{ contract.title }}</p>
+                    <p>{{ contract.upload_time }}</p>
+                    <div id='contract-comment-list-{{ contract.id }}'></div>
+                    <div>
+                        <input type='text' id='contract-comment-field-{{ contract.id }}'
+                               class='form-control' placeholder='Comments'
+                               name='comment'>
+                        <button name='contract-comment-button-{{ contract.id }}'
+                                onclick='addContractComment({{ contract.id }})'>Contract_Comment
+                        </button>
+                    </div>
+                    <div id='content-list-{{ contract.id }}'>
+                    </div>
+                    <div id='warning-list-{{ contract.id }}'>
+                    </div>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+
+</body>
+</html>
