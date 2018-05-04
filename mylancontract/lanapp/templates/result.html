@@ -88,18 +88,32 @@
         width: 80%;
     }
 
+    .list_btn {
+        background: black;
+        border-radius: 28px;
+        font-family: Arial;
+        color: #ffffff;
+        font-size: 13px;
+        padding: 10px 20px 10px 20px;
+        text-decoration: none;
+    }
+
+    .list_btn:hover {
+        background: dodgerblue;
+        text-decoration: none;
+    }
 
 </style>
 
 
 <div id="dropdownboxone" class="dropdown" style="padding-top: 20px;position: fixed">
     <!--<button class="dropbtn" style="background-color: #1d2124">Dropdown</button>-->
-    <img class="dropbtn image-size" src="{% static 'image/dropdown.png' %}" style="height:14%;width:14%;">
+    <img class="dropbtn image-size" src="{% static 'image/dropdown.png' %}" style="height:90px;width:90px;padding-right:20px">
     <div class="dropdown-content">
         {% for contract in all_contracts %}
         <form action="{% url 'get_current_contract' contract.id %}">
 
-            <button>{{ contract.filename }}</button>
+            <button class="list_btn">{{ contract.filename }}</button>
 
         </form>
 
@@ -109,39 +123,60 @@
 </div>
 
 
-
-
 <div class="content" style="padding-top: 80px">
-<div id="dropdownbox">
-    <div  class="header" style="padding-top: 40px">
-        <h2>{{ contract_name }}</h2>
-        <div class="progress-container" style="position: fixed;">
-            <div  class="progress-bar" id="myBar"></div>
+    <div id="dropdownbox">
+        <div class="header" style="padding-top: 40px">
+            <h2>{{ contract_name }}</h2>
+            <div class="progress-container" style="position: fixed;">
+                <div class="progress-bar" id="myBar"></div>
+            </div>
         </div>
     </div>
-    <!--</div>-->
-</div>
 
-    <!--<h1>{{ contract_name }}</h1>-->
+
     {% for warning in all_warnings%}
-    <p style="color:red">{{warning}}</p>
+    
+    <p>{{warning}}</p>
     {% endfor %}
 
     {% for content in all_content %}
     {% if not content.blankflag %}
-
-    {% if content.highlight %}
-
-
-    <div style="background-color: yellow;text-align: justify"><u>{{ content.content }}</u></div>
+    {% if content.highlight and content.warningflag %}
+    <div style="background-color: lavender;text-align: justify"><u>{{ content.content }}</u></div>
     <br>
+
+
+
 
     {% if content.endflag %}
     <h2>Comments</h2>
-    <textarea rows="3" cols="150" style="padding-top: 10px;align-content: center;width: 100%">
-
-</textarea>
+    <textarea rows="3" cols="150" style="padding-top: 10px;align-content: center;width: 100%"></textarea>
     {% endif %}
+
+
+      {% elif content.highlight  %}
+    <div style="background-color: yellow;text-align: justify"><u>{{ content.content }}</u></div>
+    <br>
+
+
+
+
+
+
+
+    {% if content.endflag %}
+    <h2>Comments</h2>
+    <textarea rows="3" cols="150" style="padding-top: 10px;align-content: center;width: 100%"></textarea>
+    {% endif %}
+
+
+
+
+
+
+
+
+
     {% else %}
 
 
@@ -149,15 +184,16 @@
     <br>
 
     {% endif %}
-    {% endif %}
 
+    {% endif %}
     {% endfor %}
 
     <!--<input type="button"  class="btn btn-lg btn-primary btn-block background"  style="width: 30%;padding-top: 10px" value="Export this page" onClick="window.print()">-->
     <!--<button onclick="location.href='page'">-->
 
-<div><input type="button" class="btn btn-lg btn-primary btn-block background"  style="width: 30%;height:30%;padding-top: 10px;"
-           value="Export this page" onClick='clearBox()'></div>
+    <div><input type="button" class="btn btn-lg btn-primary btn-block background"
+                style="width: 30%;height:30%;padding-top: 10px;"
+                value="Export this page" onClick='clearBox()'></div>
 
 </div>
 <script>
@@ -171,9 +207,6 @@
         document.getElementById("navigationBar").innerHTML = "";
         window.print()
     }
-
-    //    $('textarea').autoResize();
-
 
     function myFunction() {
         var winScroll = document.body.scrollTop || document.documentElement.scrollTop;

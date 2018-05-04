@@ -49,10 +49,14 @@
 
 </div>
 <br>
-<a class="btn btn-lg btn-primary btn-size btn-position background" href="{% url 'delete_all_contract' %}">Delete all</a>
+<a class="confirm-delete  btn btn-lg btn-primary btn-size btn-position background" href="{% url 'delete_all_contract' %}">Delete all</a>
 <a class="btn btn-lg btn-primary btn-size background" href="{% url 'upload' %}">Upload more</a>
 
 <br/>
-
+<script>
+    $(document).on('click', '.confirm-delete', function(){
+    return confirm('Are you sure you want to delete all contracts?');
+})
+</script>
 
 {% endblock %}
