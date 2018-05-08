@@ -138,6 +138,7 @@ def key_search(request):
 
         content_list =[]
         context['content_count'] = Content.objects.filter(contract_id=first_contract.id).count()
+        
         return render(request, 'result.html', context)
 
 def mylan_main_test(keyword):
