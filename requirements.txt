@@ -8,4 +8,4 @@ Pillow==5.0.0
 python-docx==0.8.6
 python-terraform==0.9.1
 requests==2.18.4
-urllib3==1.22
+urllib3==1.26.5
